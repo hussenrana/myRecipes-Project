@@ -30,3 +30,12 @@ $(".recipe-album-container").on("click", "img", function () {
     .text();
   alert(firstIngredient);
 });
+
+$("#Next-button").on("click", function () {
+  let nextPage = $(this).siblings("#ingredientInputField").val();
+  $.get(`/recipe/:nextPage${nextPage}?gluten=${gluten}&dairy=${dairy}`).then(
+    (data) => {
+      render(data);
+    }
+  );
+});

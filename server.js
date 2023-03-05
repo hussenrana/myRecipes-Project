@@ -24,6 +24,8 @@ const dairyIngredients = [
 const glutenIngredients = ["Flour", "Bread", "spaghetti", "Biscuits", "Beer"];
 let allIngredient = [];
 let filterRecipes = [];
+const NUMOFRECIPES = 6;
+let nextRecipes = [];
 const URL =
   "https://recipes-goodness-elevation.herokuapp.com/recipes/ingredient";
 
@@ -49,8 +51,28 @@ app.get(`/recipe/:YOUR_INGREDIENT`, function (req, res) {
   let gluten = req.query.gluten;
   allIngredient = [];
   filterRecipes = [];
+  let page = req.query.page;
+  let limit = req.query.limit;
+
+  if (!page) {
+    page = 1;
+  }
+  if (!limit) {
+    limit = NUMOFRECIPES;
+  }
+  const startIndex = (page - 1) * limit;
+  const endIndex = page * limit;
+
   axios.get(`${URL}/${ingredient}`).then((recipes) => {
-    recipes.data.results.map((element) => {
+    const results = {};
+    if (endIndex < recipes.data.results) {
+      results.next = {
+        page: page + 1,
+        limit: limit,
+      };
+    }
+    results.results = recipes.data.results.slice(startIndex, endIndex);
+    results.results.map((element) => {
       let recipe = {
         idMeal: element.idMeal,
         ingredients: element.ingredients,
@@ -60,6 +82,70 @@ app.get(`/recipe/:YOUR_INGREDIENT`, function (req, res) {
       };
       allIngredient.push(recipe);
     });
+    results.results = [];
+    results.results = allIngredient;
+
+    if (dairy == 0 && gluten == 1) {
+      filterRecipes = filter_Recipes(allIngredient, glutenIngredients);
+      res.send(filterRecipes);
+      return;
+    }
+    if (dairy == 1 && gluten == 0) {
+      filterRecipes = filter_Recipes(allIngredient, dairyIngredients);
+      res.send(filterRecipes);
+      return;
+    }
+    if (dairy == 1 && gluten == 1) {
+      filterRecipes = filter_Recipes(allIngredient, dairyIngredients);
+      let moreFilterRecipes = filter_Recipes(filterRecipes, glutenIngredients);
+      res.send(moreFilterRecipes);
+      return;
+    } else {
+      res.send(allIngredient);
+      return;
+    }
+  });
+});
+app.get(`/recipe/:YOUR_INGREDIENT`, function (req, res) {
+  let ingredient = req.params.YOUR_INGREDIENT;
+  let dairy = req.query.dairy;
+  let gluten = req.query.gluten;
+  allIngredient = [];
+  filterRecipes = [];
+  let page = req.query.page;
+  let limit = req.query.limit;
+
+  if (!page) {
+    page = 1;
+  }
+  if (!limit) {
+    limit = NUMOFRECIPES;
+  }
+  const startIndex = (page - 1) * limit;
+  const endIndex = page * limit;
+
+  axios.get(`${URL}/${nextPage}`).then((recipes) => {
+    const results = {};
+    if (endIndex < recipes.data.results) {
+      results.next = {
+        page: page + 1,
+        limit: limit,
+      };
+    }
+    results.results = recipes.data.results.slice(startIndex, endIndex);
+    results.results.map((element) => {
+      let recipe = {
+        idMeal: element.idMeal,
+        ingredients: element.ingredients,
+        title: element.title,
+        thumbnail: element.thumbnail,
+        href: element.href,
+      };
+      allIngredient.push(recipe);
+    });
+    results.results = [];
+    results.results = allIngredient;
+
     if (dairy == 0 && gluten == 1) {
       filterRecipes = filter_Recipes(allIngredient, glutenIngredients);
       res.send(filterRecipes);

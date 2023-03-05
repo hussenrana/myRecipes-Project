@@ -25,7 +25,21 @@ body {
   margin: 0.9% 1%;
   width: 8%;
 }
+#Pagination-button {
+  margin: 0.9% 1%;
+  width: 8%;
+  height: 8%;
+}
 
+.pagination-container {
+  width: calc(100% - 2rem);
+  display: flex;
+  align-items: center;
+  position: absolute;
+  bottom: 0;
+  padding: 1rem 0;
+  justify-content: center;
+}
 .recipe-album-container {
   grid-area: ic;
   display: grid;

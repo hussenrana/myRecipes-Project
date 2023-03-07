@@ -58,13 +58,19 @@ router.get(`/recipe/:YOUR_INGREDIENT`, function (req, res) {
     if (dairy == 0 && gluten == 1) {
       filterRecipes = filter_Recipes(allRecipes, sensetivity.glutenIngredients);
       paginationRecipes(filterRecipes, startIndex, lastIndex);
-      res.send(paginationRecipesArray);
+      res.send({
+        recipesArray: paginationRecipesArray,
+        size: filterRecipes.length,
+      });
       return;
     }
     if (dairy == 1 && gluten == 0) {
       filterRecipes = filter_Recipes(allRecipes, sensetivity.dairyIngredients);
       paginationRecipes(filterRecipes, startIndex, lastIndex);
-      res.send(paginationRecipesArray);
+      res.send({
+        recipesArray: paginationRecipesArray,
+        size: filterRecipes.length,
+      });
       return;
     }
     if (dairy == 1 && gluten == 1) {
@@ -74,11 +80,17 @@ router.get(`/recipe/:YOUR_INGREDIENT`, function (req, res) {
         sensetivity.glutenIngredients
       );
       paginationRecipes(moreFilterRecipes, startIndex, lastIndex);
-      res.send(paginationRecipesArray);
+      res.send({
+        recipesArray: paginationRecipesArray,
+        size: moreFilterRecipes.length,
+      });
       return;
     } else {
       paginationRecipes(allRecipes, startIndex, lastIndex);
-      res.send(paginationRecipesArray);
+      res.send({
+        recipesArray: paginationRecipesArray,
+        size: allRecipes.length,
+      });
       return;
     }
   });
